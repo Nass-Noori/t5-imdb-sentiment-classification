@@ -1,0 +1,26 @@
+model_name: t5-small
+seed: 42
+
+# data
+max_length: 256
+val_split: 0.1          # fraction of TRAIN split carved out for validation
+                         # test set is never touched until final evaluation
+
+# training
+batch_size: 32
+learning_rate: 1e-4      # LoRA typically tolerates/benefits from a higher LR
+                          # than full fine-tuning, since far fewer params move
+epochs: 10
+warmup_ratio: 0.1
+grad_clip_norm: 1.0
+early_stopping_patience: 3
+
+# parameter-efficient fine-tuning
+peft:
+  method: lora
+  rank: 8      # dimensionality of the low-rank A/B matrices
+  alpha: 4.0   # scaling factor: effective update magnitude = alpha / rank
+
+# output
+output_dir: outputs/lora
+checkpoint_name: best_model
