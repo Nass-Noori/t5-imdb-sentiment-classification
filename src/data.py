@@ -19,7 +19,7 @@ def id2label(ids):
 
 
 def label2id(labels):
-    # unknown/malformed generations (model didn't output "negative"/"positive")
+    # unknown generations (when model didn't output "negative"/"positive")
     # are mapped to id 2 so they show up as wrong answers instead of crashing
     return [LABEL2ID.get(label, 2) for label in labels]
 
