@@ -1,9 +1,9 @@
-"""Data loading and preprocessing for IMDB sentiment as a text-to-text task.
+"""
+Data loading and preprocessing for IMDB sentiment as a text-to-text task.
 
-Key fix vs. the original notebook: the IMDB `test` split is held out and used
-EXACTLY ONCE, at the very end of training, for final reporting. Model
-selection during training (checkpointing / early stopping) uses a validation
-split carved out of `train` instead. This avoids test-set leakage.
+The IMDB `test` split is held out and used EXACTLY ONCE, at the very end of training, for final reporting. 
+Model selection during training (checkpointing / early stopping) uses a validation split carved out of `train` 
+instead. This avoids test-set leakage.
 """
 
 from datasets import load_dataset, DatasetDict
