@@ -124,13 +124,13 @@ _Fill this in after running both configs on your machine — this comparison tab
 
 | Metric                    | Full fine-tuning (test) | LoRA (test) |
 | ------------------------- | ----------------------- | ----------- |
-| Accuracy                  | —                       | —           |
-| Precision                 | —                       | —           |
-| Recall                    | —                       | —           |
-| F1                        | —                       | —           |
-| Malformed generation rate | —                       | —           |
-| Trainable params          | —                       | —           |
-| Checkpoint size on disk   | —                       | —           |
+| Accuracy                  | 0.8961                  | —           |
+| Precision                 | 0.8984                  | —           |
+| Recall                    | 0.8932                  | —           |
+| F1                        | 0.8958                  | —           |
+| Malformed generation rate | 8e-05                   | —           |
+| Trainable params          | 60,506,624              | 294,912           |
+| Checkpoint size on disk   | 2.77 KB                 | —           |
 | Wall-clock time / epoch   | —                       | —           |
 
 Suggested things to note here once you have real numbers:
