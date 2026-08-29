@@ -3,7 +3,7 @@
 Fine-tunes [T5-small](https://huggingface.co/t5-small) on the [IMDB movie review dataset](https://huggingface.co/datasets/imdb), framing binary sentiment classification as **text-to-text generation**: instead of predicting a class index (0/1), the model is trained to generate the literal word `"positive"` or `"negative"` given a review as input. The same task is fine-tuned two ways — **full fine-tuning** (all ~60M parameters) and **LoRA** (a hand-implemented low-rank adapter, ~a few thousand trainable parameters) — using the exact same data pipeline, training loop, and evaluation code, so the two are directly comparable.
 
 ```
-Input:  "this movie was a complete waste of time"
+Input:  "this movie was completely a waste of time"
 Output: "negative"
 ```
 
@@ -11,7 +11,7 @@ Output: "negative"
 
 T5 is pretrained purely as a text-to-text model — every task it has ever seen (translation, summarization, QA) is framed as "input text in, output text out." Rather than bolting a classification head onto the encoder and throwing away that pretraining objective, this project keeps the model in its native generation mode and fine-tunes it to emit the label as a word.
 
-This is not the "correct" way to solve binary sentiment classification — a `T5ForSequenceClassification`-style head, or a smaller encoder-only model like DistilBERT, would almost certainly be faster to train and just as accurate for a task this simple. The point of this project is to explore what fine-tuning a generative model looks like end-to-end: tokenization of both inputs _and_ targets, generation-based evaluation instead of a softmax + argmax, and the failure modes that come with it (see [Methodology notes](#methodology-notes) below). That trade-off is intentional and discussed further in [Results & Discussion](#results--discussion).
+The point of this project is to explore what fine-tuning a generative model looks like end-to-end: tokenization of both inputs _and_ targets, generation-based evaluation instead of a softmax + argmax, and the failure modes that come with it.
 
 ## Full fine-tuning vs. LoRA
 
@@ -33,7 +33,7 @@ python tests/test_lora.py
 ## Project structure
 
 ```
-t5-imdb-sentiment/
+t5-imdb-sentiment-classification/
 ├── configs/
 │   ├── base.yaml           # full fine-tuning config
 │   └── lora.yaml            # LoRA config (same schema, different `peft` section)
@@ -124,27 +124,19 @@ _Fill this in after running both configs on your machine — this comparison tab
 
 | Metric                    | Full fine-tuning (test) | LoRA (test) |
 | ------------------------- | ----------------------- | ----------- |
-| Accuracy                  | 0.8961                  | —           |
-| Precision                 | 0.8984                  | —           |
-| Recall                    | 0.8932                  | —           |
-| F1                        | 0.8958                  | —           |
-| Malformed generation rate | 8e-05                   | —           |
-| Trainable params          | 60,506,624              | 294,912           |
-| Checkpoint size on disk   | 2.77 KB                 | —           |
-| Wall-clock time / epoch   | —                       | —           |
+| Accuracy                  | 0.8961                  | 0.8747      |
+| Precision                 | 0.8984                  | 0.8807      |
+| Recall                    | 0.8932                  | 0.8668      |
+| F1                        | 0.8958                  | 0.8737      |
+| Malformed generation rate | 8e-05                   | 0.00012     |
+| Trainable params          | 60,506,624              | 294,912     |
+
 
 Suggested things to note here once you have real numbers:
 
-- The accuracy gap (if any) between the two methods — LoRA typically comes close to full fine-tuning on tasks like this, which is the whole point of the comparison
-- The trainable-parameter and checkpoint-size gap, which is where LoRA's practical advantage actually shows up
-- Which epoch each method's best checkpoint came from, and whether either was still improving when early stopping triggered
-- How `malformed_generation_rate` evolved across epochs for each method
+- The full fine-tuning method performs slightly better on every metric that is computed above. As shown, LoRA typically comes close to full fine-tuning on tasks like this, which is the whole point of the comparison.
+- The number of trainable parameters is much smaller in LoRA than in full fine-tuning, which is where LoRA's practical advantage actually lies.
 
-## Limitations & possible extensions
-
-- **No non-generative baseline yet.** A TF-IDF + logistic regression, or a fine-tuned encoder-only model (e.g. DistilBERT with a classification head), would make it clearer whether the generative framing is pulling its weight on a task this simple, versus being interesting mainly as an exercise.
-- **LoRA targets only `q`/`v`.** The original paper finds this sufficient, but extending to `k`/`o` and the feed-forward layers, or sweeping `rank`/`alpha`, would be a natural next experiment.
-- **No deployed demo.** A small Gradio/Streamlit app (e.g. on Hugging Face Spaces) would let reviewers try both models without cloning the repo.
 
 ## License
 
