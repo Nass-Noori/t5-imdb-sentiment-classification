@@ -54,7 +54,7 @@ t5-imdb-sentiment-classification/
 ## Setup
 
 ```bash
-git clone https://github.com/<your-username>/t5-imdb-sentiment-classification.git
+git clone https://github.com/Nass-Noori/t5-imdb-sentiment-classification.git
 cd t5-imdb-sentiment-classification
 
 python -m venv venv
